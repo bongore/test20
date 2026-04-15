@@ -17,7 +17,7 @@ const rpc = rpc_urls[0]; // default RPC endpoint
 //const quiz_address = "0x5d12efccbd81c60c80e5e2caffa480f2cf80a813"//test10
 
 const class_room_address = "0xa9AA6D24ecF43fEd6203680866f78B9A4798A8e0";
-const quiz_address = "0xEbBD4E3276bcb847838E18DDA7585Ac8925a5eA6";
+const quiz_address = "0x5E718ee4D83d5E7e733BD6672afb1B14C9e0925b";
 const legacy_quiz_addresses = [
     "0x2DfaC485A476FdFbF33411C88A126D74fbfbD0Ee",
     "0x49576E6B1a9D81075767D61dAE3AdcB0b30B00d4",

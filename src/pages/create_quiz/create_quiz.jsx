@@ -11,6 +11,21 @@ import { quiz_address } from "../../contract/config";
 import { MAX_TFT_PER_LECTURE, MAX_TFT_TOTAL, QUIZ_RATE_OPTIONS, TOTAL_LECTURE_COUNT } from "../../utils/quizRewardRate";
 import "./create_quiz.css";
 
+function normalizeCreatedQuizId(value) {
+    if (typeof value === "bigint") return value.toString();
+    if (typeof value === "number" && Number.isFinite(value)) return String(Math.trunc(value));
+    if (typeof value !== "string") return "";
+
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+
+    try {
+        return BigInt(trimmed).toString();
+    } catch (error) {
+        return "";
+    }
+}
+
 function Create_quiz() {
     const navigate = useNavigate();
     const [useing_address, Set_useing_address] = useState(null);
@@ -71,7 +86,7 @@ function Create_quiz() {
                     reward,
                 });
 
-                let createdQuizId = receipt?.logs?.[2]?.topics?.[2];
+                let createdQuizId = normalizeCreatedQuizId(receipt?.logs?.[2]?.topics?.[2]);
                 if (!createdQuizId) {
                     const latestLength = Number(await Contract.get_quiz_lenght(quiz_address));
                     if (latestLength > previousLength) {
@@ -80,7 +95,10 @@ function Create_quiz() {
                 }
 
                 if (createdQuizId) {
-                    const normalizedQuizId = BigInt(createdQuizId).toString();
+                    const normalizedQuizId = normalizeCreatedQuizId(createdQuizId);
+                    if (!normalizedQuizId) {
+                        throw new Error("created_quiz_id_unavailable");
+                    }
                     setRegisteredCorrectAnswer(normalizedQuizId, convertFullWidthNumbersToHalf(correct), quiz_address);
                     navigate(`/answer_quiz/${normalizedQuizId}?c=${encodeURIComponent(quiz_address)}`);
                     return;

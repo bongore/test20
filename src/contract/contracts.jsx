@@ -1267,6 +1267,10 @@ class Contracts_MetaMask {
         // Date オブジェクトをエポック秒に変換する
         const epochStartSeconds = Math.floor(dateStartObj.getTime() / 1000);
         const epochEndSeconds = Math.floor(dateEndObj.getTime() / 1000);
+        const normalizedAnswerType = Number.isFinite(Number(answer_type)) ? Number(answer_type) : 0;
+        const normalizedAnswerData = Array.isArray(answer_data) ? answer_data.join(",") : String(answer_data || "");
+        const normalizedReward = Number.isFinite(Number(reward)) ? Number(reward) : 0;
+        const normalizedCorrectLimit = Number.isFinite(Number(correct_limit)) ? Number(correct_limit) : 0;
         try {
             if (ethereum) {
                 return await this.writeContractDirect({
@@ -1274,7 +1278,19 @@ class Contracts_MetaMask {
                     address: quiz_address,
                     abi: quiz_abi,
                     functionName: "create_quiz",
-                    args: [title, explanation, thumbnail_url, content, answer_type, answer_data.toString(), correct, epochStartSeconds, epochEndSeconds, reward, correct_limit],
+                    args: [
+                        String(title || ""),
+                        String(explanation || ""),
+                        String(thumbnail_url || ""),
+                        String(content || ""),
+                        normalizedAnswerType,
+                        normalizedAnswerData,
+                        String(correct || ""),
+                        epochStartSeconds,
+                        epochEndSeconds,
+                        normalizedReward,
+                        normalizedCorrectLimit,
+                    ],
                 });
             } else {
                 throw new Error("ethereum_not_found");

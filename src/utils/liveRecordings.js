@@ -1,7 +1,9 @@
-const DB_NAME = "web3-quiz-live-recordings";
+import { scopeDatabaseName, scopeStorageKey } from "./storageScope";
+
+const DB_NAME = scopeDatabaseName("web3-quiz-live-recordings");
 const STORE_NAME = "recordings";
 const VERSION = 1;
-const UPDATE_KEY = "web3_quiz_live_recordings_updated_v1";
+const UPDATE_KEY = scopeStorageKey("web3_quiz_live_recordings_updated_v1");
 
 function openDb() {
     return new Promise((resolve, reject) => {

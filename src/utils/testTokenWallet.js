@@ -1,6 +1,8 @@
-const STORAGE_KEY = "web3_quiz_ttt_wallet_v1";
+import { scopeStorageKey } from "./storageScope";
+
+const STORAGE_KEY = scopeStorageKey("web3_quiz_ttt_wallet_v1");
 const DAILY_LOGIN_REWARD = 100;
-const UPDATE_KEY = "web3_quiz_ttt_wallet_updated_v1";
+const UPDATE_KEY = scopeStorageKey("web3_quiz_ttt_wallet_updated_v1");
 
 function readState() {
     try {

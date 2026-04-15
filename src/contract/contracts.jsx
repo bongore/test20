@@ -25,7 +25,7 @@ import {
     sliceByNumber,
     getEthereumProvider as resolveEthereumProvider,
 } from "./contractClients";
-import { getRegisteredCorrectAnswer } from "../utils/quizCorrectAnswerStore";
+import { buildQuizStorageKey, getRegisteredCorrectAnswer } from "../utils/quizCorrectAnswerStore";
 
 const IS_TEACHER_NO_ARG_ABI = {
     type: "function",
@@ -1356,7 +1356,7 @@ class Contracts_MetaMask {
                     let res = await publicClient.waitForTransactionReceipt({ hash });
                     console.log(res);
                     // トランザクション成功後にのみローカルに保存
-                    localStorage.setItem(`quiz_${this.normalizeQuizAddress(sourceAddress)}_${id}_answer`, answer);
+                    localStorage.setItem(buildQuizStorageKey(id, sourceAddress), answer);
                     return res;
                 } else {
                     // hash が取得できなかった = トランザクションが拒否された

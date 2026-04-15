@@ -8,6 +8,7 @@ import { useAccessControl } from "../../utils/accessControl";
 import { Contracts_MetaMask } from "../../contract/contracts";
 import { appendBoardLog, upsertBoardLog } from "../../utils/boardModerationLog";
 import { getAnnouncements, publishAnnouncement, removeAnnouncement, subscribeAnnouncements } from "../../utils/courseEnhancements";
+import { scopeStorageKey } from "../../utils/storageScope";
 
 const DUMMY_COMMENTS = [
     "この内容はあとで復習できますか？",
@@ -40,9 +41,9 @@ const REACTION_TIMING_GUIDE = [
     "演習問題の解説を聞いた後",
     "授業の妨げにならないので積極的に使いましょう!",
 ];
-const REACTION_HISTORY_KEY = "board_reaction_history_snapshot_v1";
-const REACTION_HISTORY_DELETED_IDS_KEY = "board_reaction_history_deleted_ids_v1";
-const REACTION_TIMELINE_MEMO_KEY = "board_reaction_timeline_memos_v1";
+const REACTION_HISTORY_KEY = scopeStorageKey("board_reaction_history_snapshot_v1");
+const REACTION_HISTORY_DELETED_IDS_KEY = scopeStorageKey("board_reaction_history_deleted_ids_v1");
+const REACTION_TIMELINE_MEMO_KEY = scopeStorageKey("board_reaction_timeline_memos_v1");
 
 function createDefaultReactions() {
     return {

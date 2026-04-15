@@ -1,10 +1,12 @@
 import { getActivityLogs } from "./activityLog";
 import { getBoardLogs } from "./boardModerationLog";
+import { scopeStorageKey } from "./storageScope";
 
-const ANNOUNCEMENT_KEY = "web3_quiz_announcements_v1";
+const ANNOUNCEMENT_KEY = scopeStorageKey("web3_quiz_announcements_v1");
 const ANNOUNCEMENT_EVENT = "course-announcements-updated";
-const PRACTICE_KEY = "web3_quiz_practice_attempts_v1";
+const PRACTICE_KEY = scopeStorageKey("web3_quiz_practice_attempts_v1");
 const PRACTICE_EVENT = "course-practice-updated";
+const REACTION_HISTORY_KEY = scopeStorageKey("board_reaction_history_snapshot_v1");
 
 function safeReadJson(key, fallback = []) {
     try {
@@ -93,7 +95,7 @@ function subscribePracticeAttempts(handler) {
 
 function getReactionHistorySnapshot() {
     try {
-        const raw = localStorage.getItem("board_reaction_history_snapshot_v1");
+        const raw = localStorage.getItem(REACTION_HISTORY_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
         return Array.isArray(parsed) ? parsed : [];
     } catch (error) {

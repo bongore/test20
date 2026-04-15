@@ -1,4 +1,6 @@
-const BOARD_LOG_KEY = "web3_quiz_board_moderation_log_v1";
+import { scopeStorageKey } from "./storageScope";
+
+const BOARD_LOG_KEY = scopeStorageKey("web3_quiz_board_moderation_log_v1");
 const BOARD_LOG_EVENT = "board-moderation-log-updated";
 const MAX_LOGS = 300;
 

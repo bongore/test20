@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { formatDateTime } from "../../../utils/activityLog";
 import { getBoardLogs, subscribeToBoardLogs } from "../../../utils/boardModerationLog";
+import { scopeStorageKey } from "../../../utils/storageScope";
 import "./activity_logs.css";
 
-const REACTION_HISTORY_KEY = "board_reaction_history_snapshot_v1";
+const REACTION_HISTORY_KEY = scopeStorageKey("board_reaction_history_snapshot_v1");
 
 function getReactionHistorySnapshot() {
     try {

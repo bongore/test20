@@ -1,5 +1,7 @@
-const LIVE_STATE_KEY = "web3_quiz_live_broadcast_state_v1";
-const LIVE_HISTORY_KEY = "web3_quiz_live_broadcast_history_v1";
+import { scopeStorageKey } from "./storageScope";
+
+const LIVE_STATE_KEY = scopeStorageKey("web3_quiz_live_broadcast_state_v1");
+const LIVE_HISTORY_KEY = scopeStorageKey("web3_quiz_live_broadcast_history_v1");
 const MAX_HISTORY = 200;
 const STALE_MS = 15000;
 

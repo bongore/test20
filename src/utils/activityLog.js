@@ -1,7 +1,9 @@
-const STORAGE_KEY = "web3_quiz_activity_logs_v3";
-const DRAFT_PREFIX = "web3_quiz_draft_";
-const SESSION_KEY = "web3_quiz_session_id";
-const ACTOR_KEY = "web3_quiz_actor";
+import { scopeStorageKey } from "./storageScope";
+
+const STORAGE_KEY = scopeStorageKey("web3_quiz_activity_logs_v3");
+const DRAFT_PREFIX = scopeStorageKey("web3_quiz_draft_");
+const SESSION_KEY = scopeStorageKey("web3_quiz_session_id");
+const ACTOR_KEY = scopeStorageKey("web3_quiz_actor");
 const MAX_LOGS = 10000;
 
 const ACTION_TYPES = {

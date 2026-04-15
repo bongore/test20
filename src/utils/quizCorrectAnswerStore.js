@@ -1,7 +1,8 @@
 import { quiz_address } from "../contract/config";
+import { scopeStorageKey } from "./storageScope";
 
-const CORRECT_ANSWER_STORAGE_KEY = "web3_quiz_registered_correct_answers_v2";
-const LEGACY_CORRECT_ANSWER_STORAGE_KEY = "web3_quiz_registered_correct_answers_v1";
+const CORRECT_ANSWER_STORAGE_KEY = scopeStorageKey("web3_quiz_registered_correct_answers_v2");
+const LEGACY_CORRECT_ANSWER_STORAGE_KEY = scopeStorageKey("web3_quiz_registered_correct_answers_v1");
 
 function readCorrectAnswerMap() {
     try {
@@ -68,7 +69,7 @@ function getRegisteredCorrectAnswer(quizId, contractAddress = quiz_address) {
 }
 
 function buildQuizStorageKey(quizId, contractAddress = quiz_address) {
-    return `quiz_${String(contractAddress || "").toLowerCase()}_${String(Number(quizId))}_answer`;
+    return scopeStorageKey(`quiz_${String(contractAddress || "").toLowerCase()}_${String(Number(quizId))}_answer`);
 }
 
 export {

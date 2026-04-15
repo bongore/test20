@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { scopeStorageKey } from "./storageScope";
 
-const TOKEN_SYMBOL_KEY = "web3_quiz_token_symbol";
+const TOKEN_SYMBOL_KEY = scopeStorageKey("web3_quiz_token_symbol");
 const DEFAULT_SYMBOL = "TOKEN";
 
 function getStoredTokenSymbol() {

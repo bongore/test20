@@ -610,8 +610,15 @@ class Contracts_MetaMask {
             throw new Error("ethereum_not_found");
         }
 
+        // Prompt wallet connection before encoding/sending the transaction so
+        // write flows don't fail silently on wallets that haven't exposed an account yet.
+        const resolvedAccount = account || (await this.get_address());
+        if (!resolvedAccount) {
+            throw new Error("wallet_not_connected");
+        }
+
         return await walletClient.writeContract({
-            account,
+            account: resolvedAccount,
             address,
             abi,
             functionName,
@@ -1230,6 +1237,7 @@ class Contracts_MetaMask {
         reward = Number(reward || 0) * 10 ** 18;
         try {
             if (ethereum) {
+                await this.request_wallet_access();
                 let account = await this.get_address();
                 if (!account) {
                     throw new Error("wallet_not_connected");
@@ -1271,6 +1279,9 @@ class Contracts_MetaMask {
         const normalizedAnswerData = Array.isArray(answer_data) ? answer_data.join(",") : String(answer_data || "");
         const normalizedReward = Number.isFinite(Number(reward)) ? Number(reward) : 0;
         const normalizedCorrectLimit = Number.isFinite(Number(correct_limit)) ? Number(correct_limit) : 0;
+        if (!Number.isFinite(epochStartSeconds) || !Number.isFinite(epochEndSeconds)) {
+            throw new Error("invalid_quiz_datetime");
+        }
         try {
             if (ethereum) {
                 return await this.writeContractDirect({

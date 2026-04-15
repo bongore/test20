@@ -64,7 +64,8 @@ function Create_quiz() {
     const create_quiz = async () => {
         if (correct !== "") {
             try {
-                const previousLength = Number(await Contract.get_quiz_lenght(quiz_address));
+                const previousLengthRaw = await Contract.get_quiz_lenght(quiz_address);
+                const previousLength = Number(previousLengthRaw || 0);
                 const receipt = await Contract.create_quiz(
                     title,
                     explanation,
@@ -105,7 +106,12 @@ function Create_quiz() {
                 }
             } catch (error) {
                 console.error("Failed to create quiz", error);
-                alert(error?.shortMessage || error?.message || "問題作成に失敗しました。MetaMask の承認状態と教員権限を確認してください。");
+                const message = error?.shortMessage || error?.message || "問題作成に失敗しました。MetaMask の承認状態と教員権限を確認してください。";
+                if (message === "invalid_quiz_datetime") {
+                    alert("回答開始日時または締切日時の形式が正しくありません。日時を入れ直してから再度お試しください。");
+                    return;
+                }
+                alert(message);
                 return;
             }
             navigate("/list_quiz");

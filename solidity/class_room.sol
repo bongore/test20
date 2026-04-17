@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
-import "@openzeppelin/contracts@4.4.1/token/ERC20/ERC20.sol";
 
 contract class_room {
     address public tft_token_address;
@@ -26,9 +25,11 @@ contract class_room {
     event StudentAdded(address indexed actor, address indexed student_address);
     event PlatformTokenAddressesUpdated(address indexed actor, address indexed tft_token, address indexed ttt_token);
 
-    constructor() {
-        tft_token_address = 0x021e416bb6bfA1e76Aa4E280828b1d55F2d5f2F0;
-        ttt_token_address = 0x22b6457aC35b2A839EE6eb47c91f0941E1b21476;
+    constructor(address initial_tft_token_address, address initial_ttt_token_address) {
+        require(initial_tft_token_address != address(0), "invalid_tft_token");
+        require(initial_ttt_token_address != address(0), "invalid_ttt_token");
+        tft_token_address = initial_tft_token_address;
+        ttt_token_address = initial_ttt_token_address;
         _set_role(msg.sender, UserRole.TEACHER);
     }
 

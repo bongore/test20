@@ -8,7 +8,7 @@ interface IClassRoom {
 }
 
 contract Quiz_Dapp {
-    address public constant class_room_address = 0xa9AA6D24ecF43fEd6203680866f78B9A4798A8e0;
+    address public immutable class_room_address;
     IClassRoom private immutable class_room;
     TokenInterface token;
 
@@ -91,8 +91,10 @@ contract Quiz_Dapp {
         _;
     }
 
-    constructor() {
-        class_room = IClassRoom(class_room_address);
+    constructor(address initial_class_room_address) {
+        require(initial_class_room_address != address(0), "invalid_class_room");
+        class_room_address = initial_class_room_address;
+        class_room = IClassRoom(initial_class_room_address);
         (address tft_token_address, ) = class_room.get_platform_token_addresses();
         token = TokenInterface(tft_token_address);
     }

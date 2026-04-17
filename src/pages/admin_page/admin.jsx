@@ -6,6 +6,7 @@ import View_answers from "./components/view_answers";
 import Analytics_dashboard from "./components/analytics_dashboard";
 import View_live_history from "./components/view_live_history";
 import Course_operations_panel from "./components/course_operations_panel";
+import IsolatedEnvDeployer from "./components/isolated_env_deployer";
 import { useAccessControl } from "../../utils/accessControl";
 import "./admin.css";
 
@@ -37,6 +38,7 @@ function Admin_page(props) {
                 <button className={`admin-tab-btn ${component === "Live_history" ? "active" : ""}`} onClick={() => setComponent("Live_history")}>掲示板監視</button>
                 <button className={`admin-tab-btn ${component === "Analytics" ? "active" : ""}`} onClick={() => setComponent("Analytics")}>分析ログ</button>
                 <button className={`admin-tab-btn ${component === "Operations" ? "active" : ""}`} onClick={() => setComponent("Operations")}>運営補助</button>
+                <button className={`admin-tab-btn ${component === "Isolation" ? "active" : ""}`} onClick={() => setComponent("Isolation")}>新規環境</button>
             </div>
 
             <div className="admin-panel">
@@ -47,6 +49,7 @@ function Admin_page(props) {
                 {component === "Live_history" && <View_live_history />}
                 {component === "Analytics" && <Analytics_dashboard cont={props.cont} />}
                 {component === "Operations" && <Course_operations_panel cont={props.cont} />}
+                {component === "Isolation" && <IsolatedEnvDeployer cont={props.cont} />}
             </div>
         </div>
     );

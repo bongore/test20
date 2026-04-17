@@ -91,10 +91,9 @@ contract Quiz_Dapp {
         _;
     }
 
-    constructor(address initial_class_room_address) {
-        require(initial_class_room_address != address(0), "invalid_class_room");
-        class_room_address = initial_class_room_address;
-        class_room = IClassRoom(initial_class_room_address);
+    constructor() {
+        class_room_address = 0x13054F63f67E91D12565f0B696df82FaCa6c0EB8;
+        class_room = IClassRoom(class_room_address);
         (address tft_token_address, ) = class_room.get_platform_token_addresses();
         token = TokenInterface(tft_token_address);
     }

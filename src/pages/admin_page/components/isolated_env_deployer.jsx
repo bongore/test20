@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { ethers } from "ethers";
-import classRoomArtifact from "../../../contract/generated/ClassRoomIsolated.json";
 import quizArtifact from "../../../contract/generated/QuizDappIsolated.json";
 import {
     DEFAULT_CLASS_ROOM_ADDRESS,
@@ -76,17 +75,15 @@ function IsolatedEnvDeployer(props) {
             const { signer } = await createWalletSigner();
             const signerAddress = await signer.getAddress();
 
-            setStatus("新しい class_room をデプロイしています。MetaMask を承認してください...");
-            const classRoomFactory = new ethers.ContractFactory(classRoomArtifact.abi, classRoomArtifact.bytecode, signer);
-            const classRoomContract = await classRoomFactory.deploy();
-            const nextClassRoomAddress = await waitForDeploymentAndGetAddress(classRoomContract);
+            setStatus("既定の class_room を確認しています...");
+            const nextClassRoomAddress = DEFAULT_CLASS_ROOM_ADDRESS;
             if (!isValidAddress(nextClassRoomAddress)) {
                 throw new Error("class_room_deploy_address_missing");
             }
 
-            setStatus("新しい quiz をデプロイしています。MetaMask を承認してください...");
+            setStatus("指定済みの class_room に接続する quiz をデプロイしています。MetaMask を承認してください...");
             const quizFactory = new ethers.ContractFactory(quizArtifact.abi, quizArtifact.bytecode, signer);
-            const quizContract = await quizFactory.deploy(nextClassRoomAddress);
+            const quizContract = await quizFactory.deploy();
             const nextQuizAddress = await waitForDeploymentAndGetAddress(quizContract);
             if (!isValidAddress(nextQuizAddress)) {
                 throw new Error("quiz_deploy_address_missing");
@@ -106,9 +103,9 @@ function IsolatedEnvDeployer(props) {
             setSavedConfig(nextConfig);
 
             alert(
-                `新しい環境を作成しました。\n`
-                + `deploy 実行者 ${signerAddress} は新しい class_room 上で教員として登録済みです。\n`
-                + `このあとページを再読み込みすると test20 は新しい登録・学生・問題環境を参照します。`
+                `quiz を作成しました。\n`
+                + `deploy 実行者 ${signerAddress} は class_room ${nextClassRoomAddress} を前提に利用します。\n`
+                + `このあとページを再読み込みすると test20 はこの class_room / quiz の組み合わせを参照します。`
             );
         } catch (error) {
             console.error("Failed to deploy isolated environment", error);
@@ -152,8 +149,8 @@ function IsolatedEnvDeployer(props) {
             <div className="glass-card" style={{ padding: "16px", color: "#fff" }}>
                 <h3 className="section-title" style={{ marginBottom: "10px" }}>完全新規の test20 環境を作成</h3>
                 <p className="section-desc" style={{ marginBottom: "14px" }}>
-                    新しい `class_room` と `quiz` を MetaMask から発行し、そのアドレスを test20 に保存します。
-                    これで登録、学生一覧、問題一覧を既存環境から切り離せます。
+                    指定済みの `class_room` に接続する `quiz` を MetaMask から発行し、そのアドレスを test20 に保存します。
+                    これで test20 はこの `class_room` / `quiz` の組み合わせを参照します。
                 </p>
                 <div style={{ display: "grid", gap: "8px", color: "rgba(255,255,255,0.84)" }}>
                     <div>既定の class_room: {shorten(DEFAULT_CLASS_ROOM_ADDRESS)}</div>

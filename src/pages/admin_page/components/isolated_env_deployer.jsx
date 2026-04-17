@@ -73,16 +73,12 @@ function IsolatedEnvDeployer(props) {
             await props.cont.request_wallet_access();
             await props.cont.ensure_amoy_network();
 
-            if (!isValidAddress(token_address) || !isValidAddress(ttt_token_address)) {
-                throw new Error("platform_token_address_missing");
-            }
-
             const { signer } = await createWalletSigner();
             const signerAddress = await signer.getAddress();
 
             setStatus("新しい class_room をデプロイしています。MetaMask を承認してください...");
             const classRoomFactory = new ethers.ContractFactory(classRoomArtifact.abi, classRoomArtifact.bytecode, signer);
-            const classRoomContract = await classRoomFactory.deploy(token_address, ttt_token_address);
+            const classRoomContract = await classRoomFactory.deploy();
             const nextClassRoomAddress = await waitForDeploymentAndGetAddress(classRoomContract);
             if (!isValidAddress(nextClassRoomAddress)) {
                 throw new Error("class_room_deploy_address_missing");
@@ -118,10 +114,6 @@ function IsolatedEnvDeployer(props) {
             console.error("Failed to deploy isolated environment", error);
             const message = error?.message || "デプロイに失敗しました。";
             setStatus(message);
-            if (message === "platform_token_address_missing") {
-                alert("TFT または TTT のトークンアドレスが空です。既定値を確認してから再度お試しください。");
-                return;
-            }
             alert(message);
         } finally {
             setDeploying(false);

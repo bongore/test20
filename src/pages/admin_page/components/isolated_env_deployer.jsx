@@ -18,6 +18,40 @@ function shorten(address) {
     return `${value.slice(0, 10)}...${value.slice(-6)}`;
 }
 
+function isValidAddress(value) {
+    try {
+        if (!value) return false;
+        if (ethers.utils && typeof ethers.utils.getAddress === "function") {
+            return Boolean(ethers.utils.getAddress(value));
+        }
+        return false;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function createWalletSigner() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    const signer = provider.getSigner();
+    return { provider, signer };
+}
+
+async function waitForDeploymentAndGetAddress(contract) {
+    if (!contract) return "";
+
+    if (typeof contract.waitForDeployment === "function") {
+        await contract.waitForDeployment();
+    } else if (contract.deployTransaction?.wait) {
+        await contract.deployTransaction.wait();
+    }
+
+    if (typeof contract.getAddress === "function") {
+        return await contract.getAddress();
+    }
+
+    return String(contract.target || contract.address || "");
+}
+
 function IsolatedEnvDeployer(props) {
     const currentOverrides = useMemo(() => readRuntimeContractOverrides(), []);
     const [status, setStatus] = useState("");
@@ -39,27 +73,36 @@ function IsolatedEnvDeployer(props) {
             await props.cont.request_wallet_access();
             await props.cont.ensure_amoy_network();
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-            const signer = provider.getSigner();
+            if (!isValidAddress(token_address) || !isValidAddress(ttt_token_address)) {
+                throw new Error("platform_token_address_missing");
+            }
+
+            const { signer } = await createWalletSigner();
             const signerAddress = await signer.getAddress();
 
             setStatus("新しい class_room をデプロイしています。MetaMask を承認してください...");
             const classRoomFactory = new ethers.ContractFactory(classRoomArtifact.abi, classRoomArtifact.bytecode, signer);
             const classRoomContract = await classRoomFactory.deploy(token_address, ttt_token_address);
-            await classRoomContract.deployTransaction.wait();
+            const nextClassRoomAddress = await waitForDeploymentAndGetAddress(classRoomContract);
+            if (!isValidAddress(nextClassRoomAddress)) {
+                throw new Error("class_room_deploy_address_missing");
+            }
 
             setStatus("新しい quiz をデプロイしています。MetaMask を承認してください...");
             const quizFactory = new ethers.ContractFactory(quizArtifact.abi, quizArtifact.bytecode, signer);
-            const quizContract = await quizFactory.deploy(classRoomContract.address);
-            await quizContract.deployTransaction.wait();
+            const quizContract = await quizFactory.deploy(nextClassRoomAddress);
+            const nextQuizAddress = await waitForDeploymentAndGetAddress(quizContract);
+            if (!isValidAddress(nextQuizAddress)) {
+                throw new Error("quiz_deploy_address_missing");
+            }
 
-            setClassRoomAddress(classRoomContract.address);
-            setQuizAddress(quizContract.address);
-            setStatus(`デプロイ完了: class_room ${classRoomContract.address} / quiz ${quizContract.address}`);
+            setClassRoomAddress(nextClassRoomAddress);
+            setQuizAddress(nextQuizAddress);
+            setStatus(`デプロイ完了: class_room ${nextClassRoomAddress} / quiz ${nextQuizAddress}`);
 
             const nextConfig = saveRuntimeContractOverrides({
-                class_room_address: classRoomContract.address,
-                quiz_address: quizContract.address,
+                class_room_address: nextClassRoomAddress,
+                quiz_address: nextQuizAddress,
                 legacy_quiz_addresses: [],
                 token_address,
                 ttt_token_address,
@@ -73,8 +116,13 @@ function IsolatedEnvDeployer(props) {
             );
         } catch (error) {
             console.error("Failed to deploy isolated environment", error);
-            setStatus(error?.message || "デプロイに失敗しました。");
-            alert(error?.message || "デプロイに失敗しました。MetaMask の承認やネットワークを確認してください。");
+            const message = error?.message || "デプロイに失敗しました。";
+            setStatus(message);
+            if (message === "platform_token_address_missing") {
+                alert("TFT または TTT のトークンアドレスが空です。既定値を確認してから再度お試しください。");
+                return;
+            }
+            alert(message);
         } finally {
             setDeploying(false);
         }
